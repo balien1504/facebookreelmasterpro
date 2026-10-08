@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="vi" class="h-full bg-slate-950 text-slate-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReelMaster Pro 2026 - Cẩm Nang & Bộ Công Cụ Dựng Video Ngắn Triệu View</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f5ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            accent: '#ec4899',
+                            highlight: '#06b6d4',
+                            gold: '#f59e0b'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #a855f7 0%, #ec4899 50%, #06b6d4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-card {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    </style>
+</head>
+<body class="h-full font-sans antialiased bg-slate-950 text-slate-100 flex flex-col selection:bg-brand-500 selection:text-white">
+    <div id="app" class="flex flex-col min-h-screen">
+        
+        <!-- HEADER / NAVIGATION BAR -->
+        <header class="sticky top-0 z-50 glass-panel border-b border-slate-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+                <div class="flex items-center gap-3 cursor-pointer" @click="currentTab = 'roadmap'">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-600 via-pink-500 to-amber-400 flex items-center justify-center shadow-lg shadow-pink-500/20">
+                        <i class="fa-solid fa-play text-white text-lg"></i>
+                    </div>
+                    <div>
+                        <span class="text-xl font-extrabold tracking-tight gradient-text">ReelMaster Pro</span>
+                        <span class="hidden lg:inline-block ml-2 text-xs px-2 py-0.5 rounded-full bg-brand-500/20 text-brand-highlight border border-brand-highlight/30">Chuyên Gia 20 Năm IT</span>
+                    </div>
+                </div>
+
+                <!-- Desktop Menu Navigation -->
+                <nav class="hidden md:flex items-center space-x-1">
+                    <button v-for="tab in tabs" :key="tab.id" 
+                            @click="currentTab = tab.id"
+                            :class="[currentTab === tab.id ? 'bg-slate-800 text-white font-semibold border-b-2 border-brand-accent shadow-sm' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50', 'px-3 py-2 rounded-lg text-xs lg:text-sm transition-all duration-200 flex items-center gap-1.5']">
+                        <i :class="[tab.icon, currentTab === tab.id ? 'text-pink-400' : 'text-slate-400']"></i>
+                        <span>{{ tab.name }}</span>
+                    </button>
+                </nav>
+
+                <!-- Actions Header -->
+                <div class="flex items-center gap-2">
+                    <button @click="openQuickNotes" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-medium border border-slate-700 flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-note-sticky text-amber-400"></i>
+                        <span class="hidden sm:inline">Sổ Tay Ghi Chú</span>
+                        <span v-if="savedNotes.length > 0" class="w-2 h-2 rounded-full bg-pink-500"></span>
+                    </button>
+                    <!-- Mobile Hamburger Button -->
+                    <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden p-2 rounded-lg bg-slate-800 text-slate-300">
+                        <i :class="mobileMenuOpen ? 'fa-solid fa-xmark' : 'fa-solid fa-bars'"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Navigation Drawer -->
+            <div v-if="mobileMenuOpen" class="md:hidden bg-slate-900 border-b border-slate-800 px-4 pt-2 pb-4 space-y-1">
+                <button v-for="tab in tabs" :key="tab.id" 
+                        @click="currentTab = tab.id; mobileMenuOpen = false"
+                        :class="[currentTab === tab.id ? 'bg-brand-600 text-white font-semibold' : 'text-slate-400 hover:bg-slate-800', 'w-full text-left px-3 py-2.5 rounded-lg text-sm flex items-center gap-3']">
+                    <i :class="tab.icon" class="w-5 text-center"></i>
+                    <span>{{ tab.name }}</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            
+            <!-- Toast Notification Box -->
+            <div v-if="toast.show" class="fixed bottom-5 right-5 z-50 flex items-center gap-3 px-4 py-3 rounded-xl shadow-2xl bg-slate-800 border border-slate-700 text-white animate-bounce">
+                <i :class="toast.icon" class="text-xl text-emerald-400"></i>
+                <span class="text-sm font-medium">{{ toast.message }}</span>
+            </div>
+
+            <!-- 1. TAB: LỘ TRÌNH CHO NGƯỜI MỚI (BEGINNER ROADMAP) -->
+            <div v-if="currentTab === 'roadmap'" class="space-y-8">
+                <!-- Hero Banner -->
+                <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-900 via-purple-950 to-slate-900 border border-purple-800/40 p-6 sm:p-10 shadow-2xl">
+                    <div class="relative z-10 max-w-3xl space-y-4">
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold bg-purple-500/20 text-purple-300 border border-purple-500/30">Lộ Trình Chuẩn Chuẩn Thuật Toán 2026</span>
+                        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight">
+                            Xây Kênh Video Ngắn <span class="gradient-text">Chuẩn Kỹ Thuật & Triệu View</span>
+                        </h1>
+                        <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+                            Ứng dụng tư duy hệ thống IT nâng cao: Tối ưu góc quay, bố trí ánh sáng chuyên nghiệp, làm chủ thuật toán giữ chân khán giả và tránh tuyệt đối các lỗi bị khóa/bóp tương tác.
+                        </p>
+                        <div class="pt-2 flex flex-wrap gap-3">
+                            <button @click="currentTab = 'filming'" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-pink-500 to-purple-600 font-bold text-white shadow-lg shadow-pink-500/25 hover:opacity-95 transition flex items-center gap-2 text-xs sm:text-sm">
+                                <i class="fa-solid fa-camera-rotate"></i> Học Kỹ Thuật Quay & Ánh Sáng
+                            </button>
+                            <button @click="currentTab = 'avoid'" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 font-semibold text-rose-300 border border-rose-500/30 transition text-xs sm:text-sm flex items-center gap-2">
+                                <i class="fa-solid fa-ban text-rose-400"></i> Điều Cần Tránh
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4 Steps Roadmap Cards -->
+                <div id="roadmap-steps" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div v-for="(step, idx) in roadmapSteps" :key="idx" class="glass-panel p-6 rounded-2xl hover:border-brand-500/50 transition-all duration-300 flex flex-col justify-between group">
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <span class="text-3xl font-black text-slate-700 group-hover:text-brand-accent transition">0{{ idx + 1 }}</span>
+                                <div class="w-10 h-10 rounded-xl bg-brand-500/10 text-brand-highlight flex items-center justify-center font-bold">
+                                    <i :class="step.icon"></i>
+                                </div>
+                            </div>
+                            <h3 class="text-lg font-bold text-white group-hover:text-pink-400 transition">{{ step.title }}</h3>
+                            <p class="text-xs text-slate-400 leading-relaxed">{{ step.desc }}</p>
+                            <ul class="space-y-2 pt-2 border-t border-slate-800">
+                                <li v-for="(point, pIdx) in step.points" :key="pIdx" class="text-xs text-slate-300 flex items-start gap-2">
+                                    <i class="fa-solid fa-check text-emerald-400 mt-0.5 text-xs"></i>
+                                    <span>{{ point }}</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="mt-6 pt-4 border-t border-slate-800/60">
+                            <button @click="openModal(step.modalTitle, step.modalContent)" class="w-full text-center py-2 px-3 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-xs font-semibold text-brand-highlight transition flex items-center justify-center gap-1">
+                                <span>Xem hướng dẫn chi tiết</span>
+                                <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Strategy Highlight -->
+                <div class="glass-panel rounded-2xl p-6 sm:p-8 space-y-6 border border-slate-800">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-xl font-bold">
+                            <i class="fa-solid fa-lightbulb"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-bold text-white">Chìa Khóa Cốt Lõi Tạo Video Ngắn Bán Hàng & Thương Hiệu 2026</h2>
+                            <p class="text-xs text-slate-400">Hình ảnh nét + Âm thanh sạch + Bố cục chuẩn + Giữ chân 3s đầu = Cắn Đề Xuất</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                        <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800 space-y-2">
+                            <div class="font-bold text-pink-400 flex items-center gap-2"><i class="fa-solid fa-eye"></i> Tỷ Lệ Giữ Chân (Retention Rate)</div>
+                            <p class="text-slate-300 leading-relaxed">Thuật toán AI đo lường chính xác giây khán giả thoát video. Đổi góc quay/chèn hiệu ứng mỗi 2-3 giây để ngăn bộ não bị nhàm chán.</p>
+                        </div>
+                        <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800 space-y-2">
+                            <div class="font-bold text-sky-400 flex items-center gap-2"><i class="fa-solid fa-sliders"></i> Tần Số & Bối Cảnh Nhìn</div>
+                            <p class="text-slate-300 leading-relaxed">Ánh sáng mặt rõ ràng và độ phân giải không bị vỡ giúp thuật toán AI Computer Vision phân loại chủ đề video nhanh gấp 3 lần.</p>
+                        </div>
+                        <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800 space-y-2">
+                            <div class="font-bold text-emerald-400 flex items-center gap-2"><i class="fa-solid fa-shield-halved"></i> Độ An Toàn Kênh</div>
+                            <p class="text-slate-300 leading-relaxed">Chỉ cần vi phạm 1 từ khóa cấm hoặc để dính Logo nền tảng khác, video sẽ bị gắn cờ "Nội dung chất lượng thấp" và chặn cắn view.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. TAB: KỸ THUẬT QUAY & ÁNH SÁNG (FILMING & LIGHTING GUIDE) -->
+            <div v-if="currentTab === 'filming'" class="space-y-8">
+                <div class="glass-panel p-6 sm:p-8 rounded-2xl space-y-6">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+                        <div>
+                            <span class="text-xs font-bold text-brand-highlight uppercase tracking-wider">Chuyên Mục Thiết Lập Quay Chuẩn Studio</span>
+                            <h2 class="text-2xl font-extrabold text-white mt-1">Kỹ Thuật Ánh Sáng, Góc Quay & Cảnh Quay Video Ngắn</h2>
+                            <p class="text-xs text-slate-400 mt-1">Đảm bảo hình ảnh sắc nét, lôi cuốn thị giác ngay từ giây đầu tiên</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button @click="filmingSubTab = 'lighting'" :class="[filmingSubTab === 'lighting' ? 'bg-brand-600 text-white' : 'bg-slate-900 text-slate-400 hover:bg-slate-800', 'px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2']">
+                                <i class="fa-solid fa-sun text-amber-400"></i> Kỹ Thuật Ánh Sáng
+                            </button>
+                            <button @click="filmingSubTab = 'angles'" :class="[filmingSubTab === 'angles' ? 'bg-brand-600 text-white' : 'bg-slate-900 text-slate-400 hover:bg-slate-800', 'px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2']">
+                                <i class="fa-solid fa-video text-sky-400"></i> Góc Quay & Bố Cục
+                            </button>
+                            <button @click="filmingSubTab = 'shots'" :class="[filmingSubTab === 'shots' ? 'bg-brand-600 text-white' : 'bg-slate-900 text-slate-400 hover:bg-slate-800', 'px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2']">
+                                <i class="fa-solid fa-clapperboard text-pink-400"></i> Phân Cảnh & B-Roll
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- SUB-TAB 1: LIGHTING TECHNIQUES -->
+                    <div v-if="filmingSubTab === 'lighting'" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <!-- Lighting Setup 1 -->
+                            <div class="bg-slate-900/90 rounded-2xl p-5 border border-slate-800 space-y-3">
+                                <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-lg">
+                                    <i class="fa-solid fa-sun"></i>
+                                </div>
+                                <h3 class="text-base font-bold text-white">1. Ánh Sáng Tự Nhiên (Tận Dụng Tối Đa 0đ)</h3>
+                                <p class="text-xs text-slate-400 leading-relaxed">Đặt góc máy hoặc người nói đối diện cửa sổ lệch 45 độ. Tránh quay ngược sáng (quay về hướng cửa sổ).</p>
+                                <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 text-xs text-slate-300 space-y-1">
+                                    <div class="font-bold text-amber-400">Mẹo Chuyên Gia:</div>
+                                    <p>Sử dụng rèm xốp mỏng che bớt ánh nắng gắt để tạo hiệu ứng "Softlight" da sáng mịn không bị bóng dầu.</p>
+                                </div>
+                            </div>
+
+                            <!-- Lighting Setup 2 -->
+                            <div class="bg-slate-900/90 rounded-2xl p-5 border border-slate-800 space-y-3">
+                                <div class="w-10 h-10 rounded-xl bg-pink-500/20 text-pink-400 flex items-center justify-center font-bold text-lg">
+                                    <i class="fa-solid fa-lightbulb"></i>
+                                </div>
+                                <h3 class="text-base font-bold text-white">2. Sơ Đồ 3 Điểm Sáng (3-Point Lighting)</h3>
+                                <p class="text-xs text-slate-400 leading-relaxed">Mô hình chuẩn nhất dành cho nói chuyện nói mặt hoặc review sản phẩm chuyên nghiệp.</p>
+                                <ul class="text-xs text-slate-300 space-y-1.5 list-disc pl-4">
+                                    <li><strong>Key Light (Đèn Chính):</strong> Đặt chếch 45 độ phía trước mặt.</li>
+                                    <li><strong>Fill Light (Đèn Phụ):</strong> Đặt phía đối diện làm giảm bóng đổ.</li>
+                                    <li><strong>Backlight (Đèn Viền):</strong> Chiếu từ sau lưng lên tóc tạo độ nổi khối so với phông nền.</li>
+                                </ul>
+                            </div>
+
+                            <!-- Lighting Setup 3 -->
+                            <div class="bg-slate-900/90 rounded-2xl p-5 border border-slate-800 space-y-3">
+                                <div class="w-10 h-10 rounded-xl bg-sky-500/20 text-sky-400 flex items-center justify-center font-bold text-lg">
+                                    <i class="fa-solid fa-mobile-screen-button"></i>
+                                </div>
+                                <h3 class="text-base font-bold text-white">3. Mẹo Khóa Sáng Điện Thoại (AE Lock)</h3>
+                                <p class="text-xs text-slate-400 leading-relaxed">Nếu không khóa sáng, khi cử động tay hoặc di chuyển, màn hình sẽ bị giật/sáng tối liên tục làm mất độ nét.</p>
+                                <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 text-xs text-slate-300">
+                                    <span class="font-bold text-sky-400">Thao tác:</span> Chạm và giữ tay vào điểm mặt người trên màn hình điện thoại 2 giây cho đến khi xuất hiện icon "Khóa AE/AF" (AE/AF LOCK), sau đó kéo nhẹ thanh độ sáng xuống một chút để video đầm màu hơn.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SUB-TAB 2: CAMERA ANGLES & FRAMING -->
+                    <div v-if="filmingSubTab === 'angles'" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div class="bg-slate-900/80 p-5 rounded-xl border border-slate-800 space-y-2">
+                                <div class="text-brand-highlight font-bold text-sm flex items-center gap-2">
+                                    <i class="fa-solid fa-eye"></i> Góc Ngang Tầm Mắt (Eye-Level)
+                                </div>
+                                <p class="text-xs text-slate-300 leading-relaxed">Đặt camera thẳng hàng với mắt người nói. Tạo cảm giác tin cậy, như đang trò chuyện 1-1 trực tiếp với khán giả.</p>
+                                <span class="inline-block px-2 py-0.5 rounded bg-brand-500/20 text-brand-highlight text-[10px] font-bold">Dành cho: Tâm sự, Chia sẻ kinh nghiệm</span>
+                            </div>
+
+                            <div class="bg-slate-900/80 p-5 rounded-xl border border-slate-800 space-y-2">
+                                <div class="text-amber-400 font-bold text-sm flex items-center gap-2">
+                                    <i class="fa-solid fa-arrow-up-from-ground-water"></i> Góc Dưới Hướng Lên (Low Angle)
+                                </div>
+                                <p class="text-xs text-slate-300 leading-relaxed">Đặt điện thoại thấp hơn và chĩa nhẹ lên. Tạo cảm giác quyền lực, nâng tầm giá trị cho trang phục/sản phẩm.</p>
+                                <span class="inline-block px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[10px] font-bold">Dành cho: OOTD Thời trang, Xe cộ, BĐS</span>
+                            </div>
+
+                            <div class="bg-slate-900/80 p-5 rounded-xl border border-slate-800 space-y-2">
+                                <div class="text-pink-400 font-bold text-sm flex items-center gap-2">
+                                    <i class="fa-solid fa-down-left-and-up-right-to-center"></i> Góc Từ Trên Xuống (Top-Down)
+                                </div>
+                                <p class="text-xs text-slate-300 leading-relaxed">Gắn điện thoại vuông góc 90 độ chiếu xuống mặt bàn. Giúp người xem nhìn rõ từng thao tác tay.</p>
+                                <span class="inline-block px-2 py-0.5 rounded bg-pink-500/20 text-pink-300 text-[10px] font-bold">Dành cho: Unboxing, Nấu ăn, Dạy vẽ, Setup</span>
+                            </div>
+
+                            <div class="bg-slate-900/80 p-5 rounded-xl border border-slate-800 space-y-2">
+                                <div class="text-emerald-400 font-bold text-sm flex items-center gap-2">
+                                    <i class="fa-solid fa-arrows-spin"></i> Góc Quay Chuyển Động (Dynamic POV)
+                                </div>
+                                <p class="text-xs text-slate-300 leading-relaxed">Cầm điện thoại di chuyển theo bước chân hoặc xoay nhẹ quanh sản phẩm để tạo hiệu ứng điện ảnh sinh động.</p>
+                                <span class="inline-block px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">Dành cho: VLOG Đời sống, Du lịch, Review</span>
+                            </div>
+                        </div>
+
+                        <!-- Framing Rule 1/3 -->
+                        <div class="bg-slate-900 p-5 rounded-xl border border-slate-800 flex flex-col md:flex-row gap-4 items-center">
+                            <div class="w-full md:w-1/3 bg-slate-950 p-4 rounded-xl text-center border border-slate-800">
+                                <div class="grid grid-cols-3 grid-rows-3 gap-1 h-28 w-full border border-slate-700 p-1 rounded">
+                                    <div class="border border-dashed border-slate-700 flex items-center justify-center text-[10px] text-slate-600"></div>
+                                    <div class="border border-dashed border-slate-700 flex items-center justify-center text-[10px] text-slate-600"></div>
+                                    <div class="border border-dashed border-slate-700 flex items-center justify-center text-[10px] text-slate-600"></div>
+                                    <div class="border border-dashed border-slate-700 flex items-center justify-center text-[10px] text-slate-600"></div>
+                                    <div class="border border-pink-500 bg-pink-500/20 flex items-center justify-center text-[10px] text-pink-300 font-bold">MẮT</div>
+                                    <div class="border border-dashed border-slate-700 flex items-center justify-center text-[10px] text-slate-600"></div>
+                                    <div class="border border-dashed border-slate-700 flex items-center justify-center text-[10px] text-slate-600"></div>
+                                    <div class="border border-dashed border-slate-700 flex items-center justify-center text-[10px] text-slate-600"></div>
+                                    <div class="border border-dashed border-slate-700 flex items-center justify-center text-[10px] text-slate-600"></div>
+                                </div>
+                                <span class="text-[11px] text-slate-400 mt-2 block">Bật "Lưới" (Grid) Trong Cài Đặt Camera</span>
+                            </div>
+                            <div class="w-full md:w-2/3 space-y-2">
+                                <h4 class="text-sm font-bold text-white">Quy Tắc 1/3 & Khoảng Trống Đầu (Headroom) Trong Video Dọc 9:16</h4>
+                                <p class="text-xs text-slate-300 leading-relaxed">
+                                    • Đặt mắt của người nói nằm ở 1/3 phía trên màn hình.<br>
+                                    • Giữ khoảng trống từ đỉnh đầu đến mép trên video tầm 10-15cm (tránh cộc đầu hoặc để khoảng trống quá thừa thãi).<br>
+                                    • Tuyệt đối không để phụ đề đè lên cằm hoặc che mất giao diện nút Like/Comment bên phải của Reels/TikTok.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SUB-TAB 3: SHOTS & B-ROLL -->
+                    <div v-if="filmingSubTab === 'shots'" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="bg-slate-900/80 p-5 rounded-xl border border-slate-800 space-y-3">
+                                <h3 class="text-sm font-bold text-amber-400 flex items-center gap-2">
+                                    <i class="fa-solid fa-layer-group"></i> Kết Hợp A-Roll & B-Roll Đỉnh Cao
+                                </h3>
+                                <p class="text-xs text-slate-300 leading-relaxed">
+                                    • <strong>A-Roll:</strong> Cảnh quay chính (Khuôn mặt bạn đang nói chuyện hoặc dẫn dắt).<br>
+                                    • <strong>B-Roll:</strong> Cảnh phụ chèn đè lên (Cận cảnh sản phẩm, góc thao tác, biểu cảm, cảnh minh họa).
+                                </p>
+                                <div class="p-3 bg-slate-950 rounded-lg text-xs text-slate-400 border border-slate-800">
+                                    <strong class="text-white">Công thức:</strong> Cứ 2s nói mặt (A-Roll) -> Chèn 1.5s cảnh cận sản phẩm (B-Roll) -> Quay lại A-Roll. Việc này loại bỏ cảm giác đơn điệu, giữ khán giả không lướt đi!
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-900/80 p-5 rounded-xl border border-slate-800 space-y-3">
+                                <h3 class="text-sm font-bold text-sky-400 flex items-center gap-2">
+                                    <i class="fa-solid fa-scissors"></i> Cắt Cảnh Jump-Cut & Nhịp Độ Quay
+                                </h3>
+                                <p class="text-xs text-slate-300 leading-relaxed">
+                                    • <strong>Cắt khoảng lặng (Dead Space):</strong> Xóa bỏ hoàn toàn các đoạn ngập ngừng "à, ừm", tiếng hít thở dài.<br>
+                                    • <strong>Zoom nhịp đập (Punch Zoom):</strong> Cắt đoạn thoại thành từng câu ngắn, phóng to 10% khung hình ở các từ quan trọng để tạo điểm nhấn thị giác.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. TAB: KIẾN THỨC NÊN TRÁNH (THINGS TO AVOID) -->
+            <div v-if="currentTab === 'avoid'" class="space-y-6">
+                <div class="glass-panel p-6 sm:p-8 rounded-2xl space-y-6">
+                    <div class="border-b border-slate-800 pb-4">
+                        <span class="text-xs font-bold text-rose-400 uppercase tracking-wider">Cảnh Báo Quan Trọng Thuật Toán 2026</span>
+                        <h2 class="text-2xl font-extrabold text-white mt-1">Những Điều Tối Kỵ Nên Tránh Để Không Bị Bóp View & Khóa Kênh</h2>
+                        <p class="text-xs text-slate-400 mt-1">Nhiều creator làm video rất hay nhưng view vẫn bằng 0 vì dính phải các lỗi vi phạm ngầm dưới đây.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div v-for="(avoid, aIdx) in avoidList" :key="aIdx" class="bg-slate-900/90 border border-rose-900/30 p-5 rounded-2xl space-y-3 hover:border-rose-500/50 transition">
+                            <div class="flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center font-bold">
+                                    <i :class="avoid.icon"></i>
+                                </div>
+                                <h3 class="text-base font-bold text-white">{{ avoid.title }}</h3>
+                            </div>
+                            <p class="text-xs text-slate-300 leading-relaxed">{{ avoid.desc }}</p>
+                            <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 text-[11px] text-rose-300">
+                                <strong>Hậu quả:</strong> {{ avoid.consequence }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. TAB: KHO KIẾN THỨC & MẸO HAY (KNOWLEDGE BASE) -->
+            <div v-if="currentTab === 'knowledge'" class="space-y-6">
+                <!-- Search & Category Filters -->
+                <div class="glass-panel p-6 rounded-2xl flex flex-col md:flex-row gap-4 items-center justify-between">
+                    <div class="relative w-full md:w-96">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-500 text-sm"></i>
+                        <input type="text" v-model="knowledgeSearch" placeholder="Tìm kiếm kinh nghiệm, mẹo, kỹ thuật..." class="w-full bg-slate-900 border border-slate-700 rounded-xl pl-10 pr-4 py-2.5 text-xs focus:outline-none focus:border-brand-highlight text-slate-100 placeholder-slate-500">
+                    </div>
+                    
+                    <div class="flex flex-wrap gap-2 w-full md:w-auto">
+                        <button v-for="cat in knowledgeCategories" :key="cat.id"
+                                @click="selectedCategory = cat.id"
+                                :class="[selectedCategory === cat.id ? 'bg-brand-600 text-white' : 'bg-slate-800 text-slate-400 hover:bg-slate-700', 'px-3 py-1.5 rounded-lg text-xs font-medium transition']">
+                            {{ cat.name }}
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Articles Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div v-for="article in filteredArticles" :key="article.id" class="glass-panel rounded-2xl p-6 flex flex-col justify-between hover:border-slate-600 transition">
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-slate-800 text-brand-highlight border border-slate-700">
+                                    {{ getCategoryName(article.category) }}
+                                </span>
+                                <span class="text-[11px] text-slate-500"><i class="fa-regular fa-clock mr-1"></i>{{ article.readTime }} đọc</span>
+                            </div>
+                            <h3 class="text-base font-bold text-white hover:text-brand-accent transition cursor-pointer" @click="openModal(article.title, article.content)">
+                                {{ article.title }}
+                            </h3>
+                            <p class="text-xs text-slate-400 line-clamp-3 leading-relaxed">
+                                {{ article.summary }}
+                            </p>
+                        </div>
+                        <div class="pt-4 mt-4 border-t border-slate-800 flex items-center justify-between">
+                            <span class="text-xs font-semibold text-slate-400"><i class="fa-solid fa-fire text-amber-500 mr-1"></i>{{ article.badge }}</span>
+                            <button @click="openModal(article.title, article.content)" class="text-xs font-bold text-pink-400 hover:text-pink-300 flex items-center gap-1">
+                                Đọc Ngay <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. TAB: BỘ CÔNG CỤ TƯƠNG TÁC (INTERACTIVE TOOLS) -->
+            <div v-if="currentTab === 'tools'" class="space-y-8">
+                <!-- Tool Selector Navigation -->
+                <div class="flex flex-wrap gap-2 border-b border-slate-800 pb-4">
+                    <button @click="activeSubTool = 'hook'" :class="[activeSubTool === 'hook' ? 'bg-gradient-to-r from-pink-600 to-purple-600 text-white shadow-lg' : 'bg-slate-900 text-slate-400 hover:bg-slate-800', 'px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2']">
+                        <i class="fa-solid fa-bolt text-amber-300"></i> Tạo Hook Triệu View (3s Đầu)
+                    </button>
+                    <button @click="activeSubTool = 'script'" :class="[activeSubTool === 'script' ? 'bg-gradient-to-r from-pink-600 to-purple-600 text-white shadow-lg' : 'bg-slate-900 text-slate-400 hover:bg-slate-800', 'px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2']">
+                        <i class="fa-solid fa-scroll"></i> Dựng Kịch Bản Kèm Gợi Ý Cảnh Quay
+                    </button>
+                    <button @click="activeSubTool = 'calculator'" :class="[activeSubTool === 'calculator' ? 'bg-gradient-to-r from-pink-600 to-purple-600 text-white shadow-lg' : 'bg-slate-900 text-slate-400 hover:bg-slate-800', 'px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2']">
+                        <i class="fa-solid fa-calculator text-emerald-400"></i> Tính Thu Nhập / ROI Dự Phóng
+                    </button>
+                    <button @click="activeSubTool = 'hashtags'" :class="[activeSubTool === 'hashtags' ? 'bg-gradient-to-r from-pink-600 to-purple-600 text-white shadow-lg' : 'bg-slate-900 text-slate-400 hover:bg-slate-800', 'px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2']">
+                        <i class="fa-solid fa-hashtag text-sky-400"></i> Thư Viện Hashtag Chuẩn Ngách
+                    </button>
+                </div>
+
+                <!-- SUB-TOOL 1: HOOK GENERATOR -->
+                <div v-if="activeSubTool === 'hook'" class="glass-panel p-6 sm:p-8 rounded-2xl space-y-6">
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-bolt text-amber-400"></i> Bộ Tạo Câu Mở Đầu (Hook 3 Giây) Thôi Miên
+                        </h2>
+                        <p class="text-xs text-slate-400">3 giây đầu tiên quyết định 80% thành công của một Video Short/Reel. Chọn ngành hàng & kiểu Hook để tạo ngay!</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-300 mb-2">1. Chọn Ngách Nội Dung</label>
+                            <select v-model="hookForm.niche" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-brand-500">
+                                <option value="sales">Bán Hàng / Review Sản Phẩm</option>
+                                <option value="affiliate">Affiliate / Tích Cực / Mẹo Vặt</option>
+                                <option value="knowledge">Chia Sẻ Kiến Thức / Khóa Học</option>
+                                <option value="lifestyle">Tâm Sự / VLOG / Đời Sống</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-300 mb-2">2. Chọn Kiểu Hook Cảm Xúc</label>
+                            <select v-model="hookForm.style" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-brand-500">
+                                <option value="curiosity">Gây Tò Mò Cực Độ</option>
+                                <option value="mistake">Cảnh Báo Sai Lầm Đang Mắc Phải</option>
+                                <option value="contrast">So Sánh Trước & Sau / Đảo Nguồn</option>
+                                <option value="number">Liệt Kê Con Số Ấn Tượng</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-300 mb-2">3. Từ Khóa Chủ Đề/Sản Phẩm</label>
+                            <input type="text" v-model="hookForm.keyword" placeholder="Ví dụ: Áo sơ mi, Mẹo làm đẹp, CapCut..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-brand-500">
+                        </div>
+                    </div>
+
+                    <button @click="generateHooks" class="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 font-bold text-xs text-white shadow-lg hover:opacity-95 transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-sparkles"></i> Tạo Ngay 5 Mẫu Hook "Triệu View"
+                    </button>
+
+                    <!-- Generated Hook Results -->
+                    <div v-if="generatedHooks.length > 0" class="space-y-3 pt-4 border-t border-slate-800">
+                        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Mẫu Hook Gợi Ý Dành Cho Bạn:</h3>
+                        <div v-for="(hook, hIdx) in generatedHooks" :key="hIdx" class="bg-slate-900/90 border border-slate-800 rounded-xl p-4 flex items-center justify-between gap-4 hover:border-purple-500/50 transition">
+                            <p class="text-sm text-slate-200 font-semibold"><span class="text-pink-400">#{{ hIdx + 1 }}.</span> "{{ hook }}"</p>
+                            <button @click="copyToClipboard(hook)" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-bold text-brand-highlight transition whitespace-nowrap flex items-center gap-1">
+                                <i class="fa-regular fa-copy"></i> Sao chép
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SUB-TOOL 2: SCRIPT BUILDER WITH SHOT CUES -->
+                <div v-if="activeSubTool === 'script'" class="glass-panel p-6 sm:p-8 rounded-2xl space-y-6">
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-scroll text-pink-400"></i> Công Cụ Soạn Kịch Bản Kèm Chỉ Dẫn Góc Quay & Cảnh B-Roll
+                        </h2>
+                        <p class="text-xs text-slate-400">Tự động gợi ý lời thoại + góc quay camera tương ứng giúp bạn dựng video chuyên nghiệp.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Script Form Inputs -->
+                        <div class="space-y-4 lg:col-span-1 bg-slate-900/80 p-5 rounded-xl border border-slate-800">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-300 mb-1">Mục Tiêu Video</label>
+                                <select v-model="scriptForm.goal" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs text-slate-200">
+                                    <option value="sell">Bán Sản Phẩm Trực Tiếp</option>
+                                    <option value="affiliate">Dẫn Link Bio / Affiliate</option>
+                                    <option value="views">Kéo View / Tăng Follower</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-300 mb-1">Tên Sản Phẩm / Chủ Đề</label>
+                                <input type="text" v-model="scriptForm.topic" placeholder="Ví dụ: Đèn livestream chống cận" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs text-slate-200">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-300 mb-1">Điểm Nổi Bật (Painpoint/USP)</label>
+                                <textarea v-model="scriptForm.usp" rows="3" placeholder="Ví dụ: Ánh sáng mịn da, nhỏ gọn gấp lại được, giá chỉ hơn 100k" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs text-slate-200"></textarea>
+                            </div>
+                            <button @click="generateFullScript" class="w-full py-2.5 rounded-lg bg-pink-600 hover:bg-pink-500 font-bold text-xs text-white transition">
+                                Auto Tạo Kịch Bản + Chỉ Dẫn Máy Quay
+                            </button>
+                        </div>
+
+                        <!-- Generated Script Board -->
+                        <div class="lg:col-span-2 space-y-4 bg-slate-900/40 p-5 rounded-xl border border-slate-800">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-sm font-bold text-white"><i class="fa-solid fa-clapperboard text-amber-400 mr-2"></i>Kịch Bản Chi Tiết & Góc Quay</h3>
+                                <button v-if="scriptOutput" @click="saveScriptToNotes" class="px-3 py-1 rounded bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 text-xs font-bold hover:bg-emerald-600/50 transition">
+                                    <i class="fa-solid fa-bookmark mr-1"></i> Lưu Vào Sổ Tay
+                                </button>
+                            </div>
+
+                            <div v-if="scriptOutput" class="space-y-3">
+                                <div class="p-3.5 rounded-lg bg-slate-900 border-l-4 border-amber-400 space-y-1">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-[10px] font-extrabold text-amber-400 uppercase">Phần 1: HOOK (0 - 3s)</span>
+                                        <span class="text-[10px] bg-slate-800 px-2 py-0.5 rounded text-slate-300 font-mono"><i class="fa-solid fa-video mr-1"></i>Góc Quay: Cận Cảnh (Close-up)</span>
+                                    </div>
+                                    <p class="text-xs text-slate-200 font-medium mt-1">{{ scriptOutput.hook }}</p>
+                                </div>
+                                <div class="p-3.5 rounded-lg bg-slate-900 border-l-4 border-sky-400 space-y-1">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-[10px] font-extrabold text-sky-400 uppercase">Phần 2: NỘI DUNG CHÍNH (3 - 25s)</span>
+                                        <span class="text-[10px] bg-slate-800 px-2 py-0.5 rounded text-slate-300 font-mono"><i class="fa-solid fa-layer-group mr-1"></i>A-Roll xen kẽ B-Roll</span>
+                                    </div>
+                                    <p class="text-xs text-slate-200 font-medium mt-1 whitespace-pre-line">{{ scriptOutput.body }}</p>
+                                </div>
+                                <div class="p-3.5 rounded-lg bg-slate-900 border-l-4 border-pink-500 space-y-1">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-[10px] font-extrabold text-pink-400 uppercase">Phần 3: KÊU GỌI HÀNH ĐỘNG (CTA 3s CUỐI)</span>
+                                        <span class="text-[10px] bg-slate-800 px-2 py-0.5 rounded text-slate-300 font-mono"><i class="fa-solid fa-hand-pointer mr-1"></i>Góc Ngang Tầm Mắt + Chỉ Tay</span>
+                                    </div>
+                                    <p class="text-xs text-slate-200 font-medium mt-1">{{ scriptOutput.cta }}</p>
+                                </div>
+                            </div>
+                            <div v-else class="h-48 flex items-center justify-center text-slate-500 text-xs italic">
+                                Nhập thông tin bên trái và bấm nút để tạo kịch bản chuyên nghiệp.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SUB-TOOL 3: CALCULATOR -->
+                <div v-if="activeSubTool === 'calculator'" class="glass-panel p-6 sm:p-8 rounded-2xl space-y-6">
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-calculator text-emerald-400"></i> Bảng Tính Doanh Thu & ROI Dự Phóng
+                        </h2>
+                        <p class="text-xs text-slate-400">Ước tính tiềm năng thu nhập từ View Ads, Tiền Hoa Hồng Affiliate hoặc Bán Hàng Trực Tiếp.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="space-y-4 bg-slate-900/80 p-5 rounded-xl border border-slate-800">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-300 mb-1">Mục Tiêu Tổng View / Tháng</label>
+                                <input type="number" v-model.number="calc.views" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-xs text-slate-200">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-300 mb-1">Tỷ Lệ Click Vào Link/Mua Hàng (CTR %)</label>
+                                <input type="number" step="0.1" v-model.number="calc.ctr" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-xs text-slate-200">
+                                <span class="text-[10px] text-slate-500">Trung bình video ngắn CTR dao động từ 0.5% - 2%</span>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-300 mb-1">Hoa Hồng Tự Kiến / Đơn (VNĐ)</label>
+                                <input type="number" v-model.number="calc.commission" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-xs text-slate-200">
+                            </div>
+                        </div>
+
+                        <!-- Calculation Results Output -->
+                        <div class="bg-gradient-to-br from-slate-900 to-emerald-950/40 p-6 rounded-xl border border-emerald-500/30 flex flex-col justify-between space-y-4">
+                            <div class="space-y-4">
+                                <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider">Kết Quả Thu Nhập Ước Tính</span>
+                                <div>
+                                    <div class="text-xs text-slate-400">Số Đơn Hàng / Lượt Chuyển Đổi Dự Kiến:</div>
+                                    <div class="text-2xl font-black text-white">{{ calculatedOrders.toLocaleString() }} <span class="text-xs font-normal text-slate-400">đơn</span></div>
+                                </div>
+                                <div class="pt-2 border-t border-slate-800">
+                                    <div class="text-xs text-slate-400">Doanh Thu Thuần (Hoa Hồng Affiliate / Lợi Nhuận):</div>
+                                    <div class="text-3xl font-black text-emerald-400">{{ calculatedIncome.toLocaleString() }} <span class="text-sm font-bold text-emerald-300">VNĐ</span></div>
+                                </div>
+                            </div>
+
+                            <div class="p-3 bg-emerald-500/10 rounded-lg border border-emerald-500/20 text-[11px] text-emerald-300">
+                                <i class="fa-solid fa-lightbulb mr-1"></i> Mẹo: Chỉ cần tăng tỷ lệ giữ chân video để tăng gấp đôi Lượt View, thu nhập sẽ tăng tương ứng theo cấp số nhân!
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SUB-TOOL 4: HASHTAG FINDER -->
+                <div v-if="activeSubTool === 'hashtags'" class="glass-panel p-6 sm:p-8 rounded-2xl space-y-6">
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-hashtag text-sky-400"></i> Bộ Thư Viện Hashtag Đề Xuất Theo Ngách
+                        </h2>
+                        <p class="text-xs text-slate-400">Lựa chọn đúng bộ Hashtag giúp AI phân loại tệp người xem chính xác hơn.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div v-for="(hGroup, key) in hashtagLibrary" :key="key" class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-3">
+                            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                                <span class="text-xs font-bold text-white capitalize"><i class="fa-solid fa-folder text-amber-400 mr-2"></i>{{ hGroup.title }}</span>
+                                <button @click="copyToClipboard(hGroup.tags.join(' '))" class="text-[10px] font-bold px-2 py-1 rounded bg-slate-800 text-sky-400 hover:bg-slate-700">Copy Tất Cả</button>
+                            </div>
+                            <p class="text-xs text-slate-400 leading-relaxed font-mono">{{ hGroup.tags.join(' ') }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. TAB: CHECKLIST TRƯỚC KHI ĐĂNG (PRE-PUBLISH CHECKLIST) -->
+            <div v-if="currentTab === 'checklist'" class="glass-panel p-6 sm:p-8 rounded-2xl space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-list-check text-emerald-400"></i> Danh Sách Kiểm Tra Kỹ Thuật Trước Khi Nhấn Đăng
+                        </h2>
+                        <p class="text-xs text-slate-400">Đảm bảo đạt 100% tiêu chuẩn để video cắn đề xuất mạnh nhất mà không bị lỗi hệ thống.</p>
+                    </div>
+                    <div class="flex items-center gap-2 bg-slate-900 px-4 py-2 rounded-xl border border-slate-800">
+                        <span class="text-xs font-semibold text-slate-300">Tiến độ chuẩn bị:</span>
+                        <span class="text-sm font-black text-brand-highlight">{{ checklistProgress }}%</span>
+                    </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="w-full h-2 bg-slate-900 rounded-full overflow-hidden">
+                    <div class="h-full bg-gradient-to-r from-pink-500 to-emerald-400 transition-all duration-300" :style="{ width: checklistProgress + '%' }"></div>
+                </div>
+
+                <!-- Checklist Items -->
+                <div class="space-y-3">
+                    <div v-for="(item, index) in checklistItems" :key="index" 
+                         @click="item.checked = !item.checked"
+                         :class="[item.checked ? 'bg-slate-900/90 border-emerald-500/40' : 'bg-slate-900/40 border-slate-800', 'p-4 rounded-xl border cursor-pointer flex items-start gap-3 transition-all hover:border-slate-700']">
+                        <div :class="[item.checked ? 'bg-emerald-500 text-slate-950' : 'border-slate-700 text-transparent', 'w-5 h-5 rounded-md border flex items-center justify-center text-xs mt-0.5 transition']">
+                            <i class="fa-solid fa-check font-bold"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 :class="[item.checked ? 'line-through text-slate-500' : 'text-slate-200', 'text-xs font-bold']">{{ item.title }}</h4>
+                            <p class="text-[11px] text-slate-400 mt-0.5 leading-relaxed">{{ item.desc }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 7. TAB: XỬ LÝ LỖI BÓP VIEW & 0 VIEW (TROUBLESHOOTING) -->
+            <div v-if="currentTab === 'troubleshooting'" class="space-y-6">
+                <div class="glass-panel p-6 sm:p-8 rounded-2xl">
+                    <h2 class="text-xl font-bold text-white flex items-center gap-2 mb-2">
+                        <i class="fa-solid fa-triangle-exclamation text-rose-400"></i> Bắt Bệnh & Xử Lý Triệt Để Lỗi Video 0 View / Bóp Tương Tác
+                    </h2>
+                    <p class="text-xs text-slate-400 mb-6">Phân tích nguyên nhân thuật toán và cung cấp từng bước khắc phục cụ thể.</p>
+
+                    <div class="space-y-4">
+                        <div v-for="(faq, fIdx) in troubleshootingList" :key="fIdx" class="bg-slate-900/80 border border-slate-800 rounded-xl overflow-hidden">
+                            <button @click="faq.open = !faq.open" class="w-full p-4 text-left font-bold text-xs sm:text-sm text-slate-200 flex items-center justify-between hover:bg-slate-800/50 transition">
+                                <span class="flex items-center gap-2">
+                                    <i class="fa-solid fa-circle-question text-purple-400"></i>
+                                    {{ faq.question }}
+                                </span>
+                                <i :class="faq.open ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down'" class="text-slate-500 text-xs"></i>
+                            </button>
+                            <div v-if="faq.open" class="p-4 bg-slate-950/60 border-t border-slate-800/80 text-xs text-slate-300 leading-relaxed space-y-3">
+                                <div>
+                                    <span class="font-bold text-rose-400 block mb-1">Nguyên nhân từ hệ thống/thuật toán:</span>
+                                    <p class="text-slate-300">{{ faq.cause }}</p>
+                                </div>
+                                <div class="pt-2 border-t border-slate-800/60">
+                                    <span class="font-bold text-emerald-400 block mb-1">Quy trình xử lý bước từng bước:</span>
+                                    <p class="whitespace-pre-line text-slate-200">{{ faq.solution }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- MODAL DETAIL POPUP -->
+        <div v-if="modal.show" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
+            <div class="glass-panel max-w-2xl w-full rounded-2xl p-6 sm:p-8 space-y-4 max-h-[85vh] overflow-y-auto border border-slate-700 shadow-2xl">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                    <h3 class="text-lg font-bold text-white">{{ modal.title }}</h3>
+                    <button @click="modal.show = false" class="text-slate-400 hover:text-white p-1">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+                <div class="text-xs text-slate-300 leading-relaxed whitespace-pre-line space-y-2">
+                    {{ modal.content }}
+                </div>
+                <div class="pt-4 border-t border-slate-800 flex justify-end">
+                    <button @click="modal.show = false" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-xs font-bold text-white rounded-lg">Đóng</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- QUICK NOTES DRAWER MODAL -->
+        <div v-if="showNotesModal" class="fixed inset-0 z-50 flex items-center justify-end bg-slate-950/80 backdrop-blur-sm">
+            <div class="bg-slate-900 border-l border-slate-800 w-full max-w-md h-full p-6 flex flex-col justify-between space-y-4">
+                <div class="space-y-4 flex-1 overflow-y-auto">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-note-sticky text-amber-400"></i> Sổ Tay Ghi Chú Cá Nhân
+                        </h3>
+                        <button @click="showNotesModal = false" class="text-slate-400 hover:text-white">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+
+                    <!-- New Note Input -->
+                    <div class="space-y-2">
+                        <textarea v-model="newNoteText" placeholder="Ghi chép ý tưởng kịch bản, mẹo hay lưu lại..." rows="3" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-pink-500"></textarea>
+                        <button @click="addNote" class="w-full py-2 bg-pink-600 hover:bg-pink-500 font-bold text-xs text-white rounded-lg transition">Thêm Ghi Chú Mới</button>
+                    </div>
+
+                    <!-- Saved Notes List -->
+                    <div class="space-y-2">
+                        <div v-for="(note, nIdx) in savedNotes" :key="nIdx" class="p-3 bg-slate-950 border border-slate-800 rounded-xl flex items-start justify-between gap-2">
+                            <p class="text-xs text-slate-300 leading-relaxed whitespace-pre-line">{{ note }}</p>
+                            <button @click="deleteNote(nIdx)" class="text-slate-500 hover:text-rose-400 text-xs">
+                                <i class="fa-regular fa-trash-can"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="mt-auto border-t border-slate-800/80 bg-slate-950 py-6 text-center text-xs text-slate-500">
+            <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+                <p>© 2026 ReelMaster Pro. Hệ thống chuẩn hóa quay dựng video ngắn.</p>
+                <div class="flex items-center gap-4 text-slate-400">
+                    <span class="hover:text-pink-400 cursor-pointer" @click="currentTab = 'roadmap'">Lộ Trình</span>
+                    <span class="hover:text-pink-400 cursor-pointer" @click="currentTab = 'filming'">Quay Dựng</span>
+                    <span class="hover:text-pink-400 cursor-pointer" @click="currentTab = 'avoid'">Cần Tránh</span>
+                    <span class="hover:text-pink-400 cursor-pointer" @click="currentTab = 'tools'">Công Cụ</span>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- APP SCRIPT LOGIC -->
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    currentTab: 'roadmap',
+                    filmingSubTab: 'lighting',
+                    activeSubTool: 'hook',
+                    mobileMenuOpen: false,
+                    showNotesModal: false,
+                    newNoteText: '',
+                    savedNotes: [],
+                    
+                    toast: { show: false, message: '', icon: 'fa-solid fa-circle-check' },
+                    modal: { show: false, title: '', content: '' },
+
+                    tabs: [
+                        { id: 'roadmap', name: 'Lộ Trình Từng Bước', icon: 'fa-solid fa-route' },
+                        { id: 'filming', name: 'Quay & Ánh Sáng', icon: 'fa-solid fa-video' },
+                        { id: 'avoid', name: 'Điều Cần Tránh', icon: 'fa-solid fa-ban' },
+                        { id: 'knowledge', name: 'Kho Mẹo & Kiến Thức', icon: 'fa-solid fa-book-open' },
+                        { id: 'tools', name: 'Bộ Công Cụ Dựng', icon: 'fa-solid fa-wand-magic-sparkles' },
+                        { id: 'checklist', name: 'Checklist Đăng', icon: 'fa-solid fa-list-check' },
+                        { id: 'troubleshooting', name: 'Gỡ Lỗi Bóp View', icon: 'fa-solid fa-triangle-exclamation' }
+                    ],
+
+                    // Roadmap Steps Data
+                    roadmapSteps: [
+                        {
+                            title: 'Định Hình Ngách & Tệp Xem',
+                            desc: 'Xác định rõ ngách sản phẩm, đối tượng người xem để AI thuật toán quét đúng tệp khách hàng ngay từ đầu.',
+                            icon: 'fa-solid fa-bullseye',
+                            points: ['Chọn 1 chủ đề duy nhất trong 30 bài đầu', 'Phân tích chân dung khách hàng mục tiêu', 'Chuẩn bị Ma trận nội dung 30 ngày'],
+                            modalTitle: 'Hướng Dẫn Chi Tiết: Định Hình Ngách',
+                            modalContent: `1. Không làm kênh "Tạp hóa": Thuật toán AI phân loại tệp người xem theo hành vi. Nếu bạn đăng nhiều chủ đề hỗn loạn, AI sẽ không biết phân phối cho ai.
+2. 3 Ngách dễ ra tiền nhất hiện tại:
+   - Ngách Review & Affiliate: Đồ gia dụng, công nghệ, thời trang.
+   - Ngách Mẹo Vặt & Tri Thức: Hướng dẫn kỹ năng, CapCut, mẹo máy tính, tài chính cá nhân.
+   - Ngách VLOG Đời Sống / Bán Hàng Trực Tiếp: Xây dựng câu chuyện thương hiệu cá nhân gắn liền sản phẩm.
+3. Chuẩn bị tâm lý: 10-15 video đầu tiên là giai đoạn "Warm-up" để Facebook/TikTok học tệp khách hàng của bạn.`
+                        },
+                        {
+                            title: 'Thiết Lập Ánh Sáng & Góc Quay',
+                            desc: 'Hình ảnh sắc nét và bố cục sáng giúp tăng gấp 3 lần tỷ lệ giữ chân xem tiếp ở 3 giây đầu.',
+                            icon: 'fa-solid fa-camera',
+                            points: ['Set up nguồn sáng chính (Softlight) 45 độ', 'Khóa nét/Khóa sáng (AE LOCK) trên máy', 'Canh tỷ lệ 1/3 và khoảng trống đầu'],
+                            modalTitle: 'Hướng Dẫn Chi Tiết: Thiết Lập Camera & Ánh Sáng',
+                            modalContent: `1. Quy tắc Ánh Sáng > Máy Ảnh:
+   Một chiếc điện thoại phổ thông dưới ánh sáng mịn đầy đủ luôn cho chất lượng nét hơn iPhone đắt tiền quay trong tối.
+2. Khóa Sáng AE LOCK:
+   Chạm giữ màn hình 2s để khóa sáng. Giúp video giữ màu sắc đầm, không bị giật chập chờn khi di chuyển tay.
+3. Âm thanh quyết định 50% thời lượng xem:
+   Luôn dùng micro cài áo không dây (khoảng 200k-300k). Âm thanh sạch không tiếng ồn xung quanh giữ khán giả lại lâu hơn.`
+                        },
+                        {
+                            title: 'Dựng Kịch Bản & Đổi Góc 2s',
+                            desc: 'Ứng dụng cấu trúc Visual Hook + A/B Roll + Cắt khoảng lặng để tăng Retention Rate.',
+                            icon: 'fa-solid fa-bolt',
+                            points: ['Visual Hook ngay 0.5s đầu tiên', 'Xen kẽ A-Roll nói mặt & B-Roll cận cảnh', 'Cắt sạch khoảng lặng (Dead space)'],
+                            modalTitle: 'Hướng Dẫn Chi Tiết: Công Thức Giữ Chân Khán Giả',
+                            modalContent: `1. Quy Tắc 3 Giây Vàng (Hook):
+   Khán giả quyết định lướt đi hay xem tiếp trong 3s đầu. Hãy cắt bỏ hoàn toàn các câu chào hỏi thừa thãi như "Xin chào các bạn...". Đi thẳng vào vấn đề hoặc đưa ra hình ảnh gây tò mò nhất.
+2. Giữ chân bằng visual & âm thanh (Retention):
+   - Thay đổi góc quay hoặc hiệu ứng chữ mỗi 2-3 giây.
+   - Thêm phụ đề tự động (Auto Captions) vì 70% người dùng xem video ở chế độ Tắt Tiếng.
+3. Kêu gọi hành động cuối video (CTA):
+   - Đừng nói "Hãy đăng ký kênh". Hãy nói: "Lưu lại video này kẻo quên!", "Nhấp vào giỏ hàng/bio để xem chi tiết".`
+                        },
+                        {
+                            title: 'Tối Ưu Xuất Video & Đăng Bài',
+                            desc: 'Xuất chuẩn 1080p Bitrate cao, chèn nhạc trend vừa phải và trả lời tương tác đầu.',
+                            icon: 'fa-solid fa-chart-line',
+                            points: ['Xuất CapCut 1080p - 30/60fps (Bitrate Cao)', 'Đăng đúng khung giờ tệp khán giả online', 'Tương tác trả lời comment 30p đầu'],
+                            modalTitle: 'Hướng Dẫn Chi Tiết: Tối Ưu Đăng Bài',
+                            modalContent: `1. Tần suất đăng bài:
+   Trong 1-2 tháng đầu: Đăng đều đặn 1-2 video/ngày. Thuật toán đánh giá cao các kênh có hoạt động ổn định.
+2. Khung giờ vàng tham khảo:
+   - Trưa: 11h30 - 12h30 (Giờ nghỉ trưa).
+   - Tối: 19h30 - 21h30 (Giờ giải trí chính).
+3. Hành vi sau khi đăng:
+   - Trả lời tất cả bình luận đầu tiên trong vòng 30 phút để kích hoạt thuật toán đẩy tương tác.
+   - Tuyệt đối không tự bấm Share video của mình vào quá nhiều hội nhóm bằng cùng 1 tài khoản.`
+                        }
+                    ],
+
+                    // Avoid List Data
+                    avoidList: [
+                        {
+                            title: 'Dính Watermark / Logo Nền Tảng Khác',
+                            desc: 'Đăng video có logo "TikTok/ capcut/ trên tivi..." sang Facebook Reels hoặc YouTube Shorts. Tải video phản cảm, lộ bộ phận sinh dục của động vật, không đội mũ bảo hiểm.',
+                            consequence: 'AI phân phối lập tức bóp view về dưới 100 lượt xem vì vi phạm chính sách bản quyền chéo.',
+                            icon: 'fa-solid fa-water'
+                        },
+                        {
+                            title: 'Sử Dụng Từ Khóa Bán Hàng Thô/Cấm',
+                            desc: 'Nói trực tiếp hoặc viết phụ đề các từ: "Giá tiền", "Chuyển khoản", "Mua ngay", "Cam kết trị dứt điểm", "Chữa bệnh 100%".',
+                            consequence: 'Hệ thống tự động quét nhận diện giọng nói (Speech-to-Text) và giảm 90% lượt hiển thị đề xuất.',
+                            icon: 'fa-solid fa-ban'
+                        },
+                        {
+                            title: 'Quay Video Bị Nhòe Mờ & Thiếu Sáng',
+                            desc: 'Quay phòng tối, ống kính camera bị dính mồ hôi tay, hoặc xuất video chất lượng 4K bị nền tảng nén vỡ nét.',
+                            consequence: 'AI Computer Vision đánh giá video chất lượng kỹ thuật kém, hạn chế đưa vào vòng thử nghiệm đề xuất.',
+                            icon: 'fa-solid fa-video-slash'
+                        },
+                        {
+                            title: 'Reup Nguyên Bản / Đăng Lại Video Cũ',
+                            desc: 'Tải video người khác về đăng lại không qua chỉnh sửa sâu (A/B roll, lồng tiếng, cắt ghép mới).',
+                            consequence: 'Đánh cờ "Nội dung lặp lại / Không nguyên gốc". Kênh bị mất khả năng cắn đề xuất vĩnh viễn.',
+                            icon: 'fa-solid fa-copy'
+                        }
+                    ],
+
+                    // Knowledge Base Data
+                    knowledgeSearch: '',
+                    selectedCategory: 'all',
+                    knowledgeCategories: [
+                        { id: 'all', name: 'Tất Cả' },
+                        { id: 'algorithm', name: 'Thuật Toán 2026' },
+                        { id: 'filming', name: 'Quay & Ánh Sáng' },
+                        { id: 'script', name: 'Kịch Bản' },
+                        { id: 'monetize', name: 'Kiếm Tiền' }
+                    ],
+                    articles: [
+                        {
+                            id: 1,
+                            category: 'algorithm',
+                            title: 'Cơ chế Phân Phối Lượt Xem (Watch Time) Của Reels 2026',
+                            summary: 'Thuật toán Reels không phụ thuộc vào số Follower. Nó thử nghiệm video của bạn qua 3 vòng kiểm duyệt tự động.',
+                            readTime: '3 phút',
+                            badge: 'Quan Trọng',
+                            content: `Thuật toán phân phối Reels hoạt động qua 3 Vòng:
+Vòng 1 (Tester Phase): Video được hiển thị cho 100 - 500 người ngẫu nhiên. AI sẽ đo chỉ số Retention Rate (Tỷ lệ xem tiếp sau 3s) và Completion Rate (Tỷ lệ xem hết video).
+Vòng 2 (Expansion Phase): Nếu tỷ lệ xem hết > 40%, video được đẩy sang tệp 5,000 - 50,000 người có cùng sở thích.
+Vòng 3 (Viral Phase): Video cán mốc triệu view khi có tỷ lệ Share và Save (Lưu) cao.
+
+Mẹo: Tăng chỉ số Lặp (Loop Rate) bằng cách tạo video ngắn 7s - 12s có vòng lặp vô tận.`
+                        },
+                        {
+                            id: 2,
+                            category: 'filming',
+                            title: 'Mẹo Dựng CapCut Trên Điện Thoại Xuất Video Nét Như 4K',
+                            summary: 'Hướng dẫn cài đặt thông số xuất video CapCut không bị mờ nhòe khi đăng lên Facebook Reels hay TikTok.',
+                            readTime: '4 phút',
+                            badge: 'Thủ Thuật',
+                            content: `Các bước tối ưu xuất video bằng CapCut:
+1. Vào CapCut -> Cài đặt ứng dụng -> Bật "Tải lên chất lượng cao".
+2. Trước khi xuất video, chọn Dự Án -> Chỉnh sửa hình ảnh -> Tăng "Độ nét" (Sharpen) lên +10 đến +15.
+3. Thông số Xuất Video:
+   - Độ phân giải: 1080P (Không nên chọn 4K vì Facebook/TikTok sẽ tự nén dung lượng làm vỡ nét).
+   - Tỷ lệ khung hình: 30fps hoặc 60fps.
+   - Mức mã hóa (Bitrate): Chọn "Cao".`
+                        },
+                        {
+                            id: 3,
+                            category: 'monetize',
+                            title: '3 Cách Kiếm Tiền Từ Reel Dành Cho Người Mới Bắt Đầu',
+                            summary: 'Phân tích mô hình kiếm tiền từ View Reels, Shopee/TikTok Affiliate và Bán sản phẩm dịch vụ cá nhân.',
+                            readTime: '5 phút',
+                            badge: 'Thu Nhập',
+                            content: `1. Kiếm tiền Affiliate (Tiếp thị liên kết):
+   Gắn link sản phẩm ở phần Bình luận (Comment) hoặc trang Cá nhân (Bio). Khi người xem mua hàng qua link, bạn nhận 10% - 30% hoa hồng.
+2. Kiếm tiền từ Quảng Cáo / Bonus (Facebook Reels Play & Stars):
+   Được Facebook trả tiền dựa trên lượt view và quà tặng Sao từ người hâm mộ. Yêu cầu kênh đạt tiêu chuẩn chính sách sạch.
+3. Bán hàng Trực tiếp (Direct Sales):
+   Dùng video ngắn làm phễu tiếp cận khách hàng tiềm năng, sau đó điều hướng về Tin nhắn (Messenger/Zalo) để chốt đơn.`
+                        }
+                    ],
+
+                    // Interactive Tools Data
+                    hookForm: { niche: 'sales', style: 'curiosity', keyword: '' },
+                    generatedHooks: [],
+
+                    scriptForm: { goal: 'sell', topic: '', usp: '' },
+                    scriptOutput: null,
+
+                    calc: { views: 100000, ctr: 1, commission: 50000 },
+
+                    hashtagLibrary: {
+                        fashion: { title: 'Thời Trang & Phong Cách', tags: ['#thoitrang', '#ootd', '#coitradong', '#phukien', '#outfitoftheday', '#reelsfashion'] },
+                        tech: { title: 'Công Nghệ & Mẹo Máy Tính', tags: ['#meocongnghe', '#meohay', '#laptopphukien', '#meomaytinh', '#reviewcongnghe'] },
+                        beauty: { title: 'Mỹ Phẩm & Làm Đẹp', tags: ['#skincare', '#reviewlamdep', '#goclamdep', '#makeup', '#duongda'] },
+                        lifestyle: { title: 'Đời Sống & VLOG', tags: ['#vlogdaily', '#cuocsongthuongngay', '#tamsu', '#gocchill', '#reelsviral'] }
+                    },
+
+                    // Checklist Data
+                    checklistItems: [
+                        { title: 'Khung hình dọc tỷ lệ chuẩn 9:16', desc: 'Đảm bảo không có viền đen hai bên hông video.', checked: false },
+                        { title: 'Ống kính camera đã được lau sạch mồ hôi dầu', desc: 'Camera sạch giúp hình ảnh nét trong không bị mờ đục.', checked: false },
+                        { title: 'Đã khóa AE LOCK (Khóa sáng & Khóa nét)', desc: 'Không bị hiện tượng giật sáng tối khi di chuyển tay.', checked: false },
+                        { title: 'Đã thêm Phụ đề (Captions) nổi bật', desc: 'Chữ to, dễ đọc, không bị che bởi biểu tượng Like/Share ở góc phải.', checked: false },
+                        { title: 'Âm thanh rõ ràng, có nhạc Trend vừa phải', desc: 'Tiếng nói chính to hơn nhạc nền (Nhạc nền để ở mức 10-15%).', checked: false },
+                        { title: 'Đã xóa toàn bộ Watermark / Logo ứng dụng khác', desc: 'Tuyệt đối không để dính logo CapCut outro hay logo TikTok.', checked: false },
+                        { title: 'Chèn 3-5 Hashtag chuẩn ngách', desc: 'Không gắn tràn ngập 20-30 hashtag không liên quan.', checked: false }
+                    ],
+
+                    // Troubleshooting Data
+                    troubleshootingList: [
+                        {
+                            question: 'Vì sao Video đăng lên bị đứng ở mức 0 View hoặc chỉ 100-200 view?',
+                            cause: '1. Video bị dính Logo/Watermark của ứng dụng khác.\n2. Lời thoại/Phụ đề chứa từ khóa cấm bán hàng thô.\n3. Tài khoản mới tạo đăng liên tiếp quá nhiều video bị coi là Bot Spam.',
+                            solution: '• Xóa bỏ hoàn toàn logo hoặc chuyển qua tải nhạc/dựng bằng bản gốc.\n• Tạm ngưng đăng trong 24 giờ. Dùng tài khoản đó đi lướt xem, thả tim, bình luận ở các kênh khác như người dùng thật.\n• Kiểm tra lại phụ đề và thay đổi từ ngữ bằng các từ viết lách (Ví dụ: "lúa" thay cho "tiền", "giỏ hàng" thay cho "mua ngay").',
+                            open: false
+                        },
+                        {
+                            question: 'Kênh từng có video triệu view nhưng dạo này bị tụt tương tác thảm hại?',
+                            cause: 'Thuật toán phát hiện hành vi điều hướng vi phạm (Chèn link rác ở comment, vi phạm bản quyền âm thanh hoặc nội dung lặp lại không cải tiến).',
+                            solution: '• Đổi nhạc nền trực tiếp bằng thư viện chính thức trên ứng dụng khi đăng.\n• Tăng tỷ lệ B-Roll và góc quay mới để AI đánh giá nội dung có tính sáng tạo mới.\n• Xóa hoặc ẩn các video vi phạm tiêu chuẩn cộng đồng gần đây.',
+                            open: false
+                        }
+                    ]
+                }
+            },
+            computed: {
+                filteredArticles() {
+                    return this.articles.filter(article => {
+                        const matchesCategory = this.selectedCategory === 'all' || article.category === this.selectedCategory;
+                        const matchesSearch = article.title.toLowerCase().includes(this.knowledgeSearch.toLowerCase()) || 
+                                              article.summary.toLowerCase().includes(this.knowledgeSearch.toLowerCase());
+                        return matchesCategory && matchesSearch;
+                    });
+                },
+                calculatedOrders() {
+                    return Math.floor((this.calc.views * (this.calc.ctr / 100)));
+                },
+                calculatedIncome() {
+                    return this.calculatedOrders * this.calc.commission;
+                },
+                checklistProgress() {
+                    const checkedCount = this.checklistItems.filter(i => i.checked).length;
+                    return Math.round((checkedCount / this.checklistItems.length) * 100);
+                }
+            },
+            methods: {
+                showToast(msg, icon = 'fa-solid fa-circle-check') {
+                    this.toast.message = msg;
+                    this.toast.icon = icon;
+                    this.toast.show = true;
+                    setTimeout(() => { this.toast.show = false; }, 3000);
+                },
+                openModal(title, content) {
+                    this.modal.title = title;
+                    this.modal.content = content;
+                    this.modal.show = true;
+                },
+                getCategoryName(catKey) {
+                    const found = this.knowledgeCategories.find(c => c.id === catKey);
+                    return found ? found.name : catKey;
+                },
+                copyToClipboard(text) {
+                    const textarea = document.createElement('textarea');
+                    textarea.value = text;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                    this.showToast('Đã sao chép vào bộ nhớ tạm!');
+                },
+                generateHooks() {
+                    const kw = this.hookForm.keyword || 'sản phẩm này';
+                    const list = [];
+
+                    if (this.hookForm.style === 'curiosity') {
+                        list.push(`Đừng bao giờ mua ${kw} nếu bạn chưa biết bí mật này!`);
+                        list.push(`Sự thật về ${kw} mà các shop không muốn cho bạn biết...`);
+                        list.push(`Tại sao ai cũng dùng ${kw} còn bạn thì chưa?`);
+                        list.push(`Tôi đã thử dùng ${kw} trong 7 ngày và đây là kết quả bất ngờ!`);
+                        list.push(`3 Điều cực kỳ lạ kỳ về ${kw} ít ai nhận ra.`);
+                    } else if (this.hookForm.style === 'mistake') {
+                        list.push(`90% Người dùng ${kw} đều đang mắc phải sai lầm nghiêm trọng này!`);
+                        list.push(`Dừng ngay việc dùng ${kw} theo cách này kẻo hối hận!`);
+                        list.push(`3 Sai lầm khiến bạn tốn tiền vô ích khi mua ${kw}.`);
+                        list.push(`Nếu bạn vẫn làm điều này với ${kw}, hãy xem hết video!`);
+                        list.push(`Cảnh báo: Đừng mắc bẫy khi lựa chọn ${kw}!`);
+                    } else {
+                        list.push(`Chỉ với 5 phút mỗi ngày để làm chủ ${kw}.`);
+                        list.push(`Top 3 lý do ${kw} trở thành xu hướng hot nhất hiện nay!`);
+                        list.push(`1 Giải pháp thay thế hoàn hảo cho ${kw} giá cực rẻ.`);
+                        list.push(`Cách sở hữu ${kw} chuẩn chỉnh mà không tốn quá nhiều tiền.`);
+                        list.push(`Thử thách 3 ngày trải nghiệm ${kw} đỉnh cao!`);
+                    }
+
+                    this.generatedHooks = list;
+                    this.showToast('Đã tạo thành công 5 mẫu Hook!');
+                },
+                generateFullScript() {
+                    const topic = this.scriptForm.topic || 'Sản phẩm hot';
+                    const usp = this.scriptForm.usp || 'Chất lượng cao, giá hợp lý';
+
+                    this.scriptOutput = {
+                        hook: `[Góc quay Cận cảnh - Close Up] "Nếu bạn đang tìm ${topic} thì dừng lại 3 giây xem hết video này!"`,
+                        body: `1. [Góc Eye-Level] Nỗi đau: "Rất nhiều bạn phàn nàn rằng mua về không giống hình hoặc dùng vài hôm đã hỏng..."\n2. [Chèn B-Roll Cận Cảnh 45 độ] Giải pháp: "Nhưng với ${topic} này thì khác hoàn toàn nhờ tính năng: ${usp}."\n3. [Góc Top-Down thao tác] Trải nghiệm thực tế: Dùng thử trực tiếp nhanh gọn sắc nét trong 5 giây.`,
+                        cta: `[Góc Ngang Tầm Mắt + Chỉ Tay Nhẹ] "Nhấp ngay vào giỏ hàng/link bio để nhận ưu đãi giảm giá đặc biệt hôm nay nhé!"`
+                    };
+                    this.showToast('Đã tự động xuất kịch bản + Góc quay!');
+                },
+                openQuickNotes() {
+                    this.showNotesModal = true;
+                },
+                addNote() {
+                    if (!this.newNoteText.trim()) return;
+                    this.savedNotes.unshift(this.newNoteText);
+                    this.newNoteText = '';
+                    this.showToast('Đã thêm ghi chú mới!');
+                },
+                deleteNote(idx) {
+                    this.savedNotes.splice(idx, 1);
+                    this.showToast('Đã xóa ghi chú!');
+                },
+                saveScriptToNotes() {
+                    if (!this.scriptOutput) return;
+                    const text = `KỊCH BẢN: ${this.scriptForm.topic}\n- HOOK: ${this.scriptOutput.hook}\n- NỘI DUNG & B-ROLL: ${this.scriptOutput.body}\n- CTA: ${this.scriptOutput.cta}`;
+                    this.savedNotes.unshift(text);
+                    this.showToast('Đã lưu kịch bản vào Sổ Tay Ghi Chú!');
+                }
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
